@@ -1,0 +1,268 @@
+.page {
+  padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: var(--hr-text, #1f2937);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+  }
+}
+
+.subtitle,
+.muted {
+  margin: 0;
+  font-size: 13px;
+  color: var(--hr-text-muted, #6b7280);
+}
+
+.btn {
+  border: 1px solid var(--hr-border, #d8dee6);
+  background: var(--hr-surface, #fff);
+  border-radius: 10px;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+
+  &:hover {
+    background: var(--hr-surface-muted, #f5f7fa);
+  }
+}
+
+.btn-primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.link {
+  font-size: 13px;
+  color: var(--hr-primary, #2563eb);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Stat cards */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--hr-border, #d8dee6);
+  background: var(--hr-surface, #fff);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--hr-text-muted, #6b7280);
+}
+
+.stat-jobs {
+  border-top: 4px solid #2563eb;
+}
+
+.stat-applicants {
+  border-top: 4px solid #7c3aed;
+}
+
+.stat-shortlisted {
+  border-top: 4px solid #eab308;
+}
+
+.stat-interviews {
+  border-top: 4px solid #0ea5e9;
+}
+
+.stat-accepted {
+  border-top: 4px solid #16a34a;
+}
+
+.stat-rejected {
+  border-top: 4px solid #dc2626;
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.card {
+  background: var(--hr-surface, #fff);
+  border: 1px solid var(--hr-border, #d8dee6);
+  border-radius: 14px;
+  padding: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 15px;
+  }
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.upcoming,
+.bars {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.upcoming li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--hr-border, #eef1f5);
+  border-radius: 12px;
+  background: var(--hr-surface-muted, #fafbfc);
+}
+
+.when {
+  font-weight: 800;
+  font-size: 13px;
+  color: #1d4ed8;
+  white-space: nowrap;
+}
+
+.bar-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.bar-label {
+  font-weight: 700;
+}
+
+.bar-count {
+  color: var(--hr-text-muted, #6b7280);
+}
+
+.bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--hr-surface-muted, #eef2f7);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
+.fill-submitted {
+  background: #64748b;
+}
+
+.fill-shortlisted {
+  background: #2563eb;
+}
+
+.fill-interview {
+  background: #eab308;
+}
+
+.fill-accepted {
+  background: #16a34a;
+}
+
+.fill-rejected {
+  background: #dc2626;
+}
+
+/* States */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 16px;
+  margin-top: 18px;
+  text-align: center;
+  border: 1px dashed var(--hr-border, #d8dee6);
+  border-radius: 14px;
+  color: var(--hr-text-muted, #6b7280);
+
+  p {
+    margin: 0;
+  }
+}
+
+.state-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--hr-border, #d8dee6);
+  border-top-color: var(--hr-primary, #2563eb);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 820px) {
+  .page {
+    padding: 14px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

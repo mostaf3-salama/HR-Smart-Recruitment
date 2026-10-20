@@ -1,0 +1,41 @@
+<div class="page" dir="ltr">
+  <h1>My Applications</h1>
+  <p class="subtitle">Track every job you applied for</p>
+
+  <section class="filters" aria-label="Status filter">
+    <label class="field" *ngFor="let option of statusOptions">
+      <input type="radio" name="status" [formControl]="statusControl" [value]="option" />
+      {{ option === 'all' ? 'All' : option }}
+    </label>
+  </section>
+
+  <section class="state state-error" *ngIf="(vm$ | async)?.error as error" role="alert">
+    <p>{{ error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <hr-loader *ngIf="(vm$ | async)?.loading">Loading your applications…</hr-loader>
+
+  <ng-container *ngIf="!(vm$ | async)?.loading && !(vm$ | async)?.error">
+    <hr-empty-state
+      *ngIf="(vm$ | async)?.applications?.length === 0"
+      message="No applications here yet."></hr-empty-state>
+
+    <section class="cards" *ngIf="(vm$ | async)?.applications as applications">
+      <article class="card" *ngFor="let application of applications; trackBy: trackById">
+        <div class="card-head">
+          <div>
+            <h3>{{ application.jobTitle }}</h3>
+            <p class="muted">Applied {{ application.appliedAt | date: 'dd/MM/yyyy' }}</p>
+          </div>
+          <hr-status-badge [tone]="statusTone(application.status)">{{ application.status }}</hr-status-badge>
+        </div>
+
+        <div class="card-foot">
+          <hr-score-bar [score]="application.matchScore"></hr-score-bar>
+          <a class="link" [routerLink]="['/candidate/applications', application.id]">Details →</a>
+        </div>
+      </article>
+    </section>
+  </ng-container>
+</div>

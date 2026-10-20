@@ -1,0 +1,39 @@
+<div class="page" dir="ltr" *ngIf="vm$ | async as vm">
+  <a routerLink="/jobs" class="back-link">← All jobs</a>
+
+  <hr-loader *ngIf="vm.loading">Loading the job…</hr-loader>
+
+  <section class="state state-error" *ngIf="vm.error" role="alert">
+    <p>{{ vm.error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <article class="card" *ngIf="!vm.loading && !vm.error && vm.job as job">
+    <div class="job-head">
+      <div>
+        <h1>{{ job.title }}</h1>
+        <p class="muted">🧰 {{ job.experienceRequired }} yrs experience · 📅 Posted {{ job.createdAt | date: 'dd/MM/yyyy' }}</p>
+      </div>
+      <hr-status-badge [tone]="job.isActive ? 'success' : 'neutral'">
+        {{ job.isActive ? 'Active' : 'Closed' }}
+      </hr-status-badge>
+    </div>
+
+    <section>
+      <h2>Description</h2>
+      <p class="desc">{{ job.description }}</p>
+    </section>
+
+    <section>
+      <h2>Required skills</h2>
+      <ul class="skills">
+        <li *ngFor="let skill of skillsOf(job)" class="skill">{{ skill }}</li>
+      </ul>
+    </section>
+
+    <div class="actions">
+      <a class="btn btn-primary" [routerLink]="['/jobs', job.id, 'apply']" *ngIf="job.isActive">Apply for this job →</a>
+      <span class="muted" *ngIf="!job.isActive">This position is closed and no longer accepts applications.</span>
+    </div>
+  </article>
+</div>

@@ -1,0 +1,136 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--hr-bg, #f3f5f9);
+  color: var(--hr-text, #1f2937);
+}
+
+.progress {
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #93c5fd, #2563eb);
+  background-size: 200% 100%;
+  animation: slide 1.2s linear infinite;
+}
+
+@keyframes slide {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.brand {
+  font-weight: 800;
+}
+
+.brand em {
+  font-style: normal;
+  color: #93c5fd;
+}
+
+.userbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.user em {
+  font-style: normal;
+  color: #93c5fd;
+}
+
+.logout {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 230px;
+  flex: 0 0 auto;
+  padding: 16px 12px;
+  background: var(--hr-surface, #fff);
+  border-right: 1px solid var(--hr-border, #d8dee6);
+}
+
+.sidebar a,
+.sidebar .soon {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--hr-text, #1f2937);
+}
+
+.sidebar a:hover {
+  background: var(--hr-surface-muted, #f5f7fa);
+}
+
+.sidebar a.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.sidebar .soon {
+  color: var(--hr-text-muted, #9ca3af);
+  cursor: default;
+}
+
+.sidebar .soon em {
+  font-style: normal;
+  font-size: 11px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-left: 4px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: 0;
+    border-bottom: 1px solid var(--hr-border, #d8dee6);
+  }
+
+  .body {
+    flex-direction: column;
+  }
+}

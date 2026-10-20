@@ -1,0 +1,25 @@
+<div class="auth-page" dir="ltr">
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" aria-label="Login">
+    <h1>Welcome back 👋</h1>
+    <p class="subtitle">Log in to Smart Recruitment</p>
+
+    <label class="field">
+      <span>Email</span>
+      <input type="email" formControlName="email" autocomplete="username" placeholder="you@company.com" />
+    </label>
+
+    <label class="field">
+      <span>Password</span>
+      <input type="password" formControlName="password" autocomplete="current-password" placeholder="••••••••" />
+    </label>
+
+    <p class="error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+
+    <button type="submit" class="btn-primary" [disabled]="busy">
+      {{ busy ? 'Logging in…' : 'Login' }}
+    </button>
+
+    <p class="switch">No account? <a routerLink="/auth/register">Create one</a></p>
+    <p class="hint">Demo HR access: <code>admin@smartrecruitment.com</code> / <code>Admin@123456</code></p>
+  </form>
+</div>

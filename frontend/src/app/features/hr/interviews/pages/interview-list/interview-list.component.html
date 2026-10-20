@@ -1,0 +1,153 @@
+<div class="page" dir="ltr">
+  <header class="page-header">
+    <div>
+      <a routerLink="/hr/dashboard" class="back-link">← HR Dashboard</a>
+      <h1>Interviews</h1>
+      <p class="subtitle">Schedule interviews for Shortlisted candidates and record their results</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openSchedule()">+ Schedule interview</button>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist" aria-label="Interview filter">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="tab === 'upcoming'"
+      [class.active]="tab === 'upcoming'"
+      (click)="switchTab('upcoming')">
+      Upcoming
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="tab === 'past'"
+      [class.active]="tab === 'past'"
+      (click)="switchTab('past')">
+      Past
+    </button>
+  </div>
+
+  <!-- Schedule form -->
+  <section class="card form-card" *ngIf="showScheduleForm" aria-label="Schedule a new interview">
+    <h2>Schedule a new interview</h2>
+
+    <form [formGroup]="scheduleForm" (ngSubmit)="submitSchedule()">
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Applicant (Shortlisted only) *</span>
+          <select formControlName="applicationId">
+            <option [ngValue]="null">— Select an applicant —</option>
+            <option *ngFor="let candidate of shortlisted" [ngValue]="candidate.applicationId">
+              {{ candidate.candidateName }} — {{ candidate.jobTitle }}
+            </option>
+          </select>
+          <span class="field-error" *ngIf="scheduleForm.get('applicationId')?.touched && scheduleForm.get('applicationId')?.invalid">
+            Please select an applicant
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Interview type *</span>
+          <select formControlName="type">
+            <option *ngFor="let type of typeOptions" [value]="type">{{ typeLabels[type] }}</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Date and time *</span>
+          <input type="datetime-local" formControlName="scheduledAt" />
+          <span class="field-error" *ngIf="scheduleForm.get('scheduledAt')?.touched && scheduleForm.get('scheduledAt')?.invalid">
+            Please pick a future date and time
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Location (optional)</span>
+          <input
+            type="text"
+            formControlName="location"
+            maxlength="200"
+            placeholder="e.g. Online – Google Meet or office address" />
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn" (click)="closeSchedule()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="scheduleBusy">
+          {{ scheduleBusy ? 'Saving…' : 'Confirm schedule' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Error state -->
+  <section class="state state-error" *ngIf="(vm$ | async)?.error as error" role="alert">
+    <p>{{ error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <!-- Loading state (shared) -->
+  <hr-loader *ngIf="(vm$ | async)?.loading">Loading interviews…</hr-loader>
+
+  <ng-container *ngIf="!(vm$ | async)?.loading && !(vm$ | async)?.error">
+    <!-- Empty state (shared) -->
+    <hr-empty-state
+      *ngIf="(vm$ | async)?.interviews?.length === 0"
+      [message]="tab === 'upcoming' ? 'No scheduled interviews. Start by scheduling the first one.' : 'No past interviews yet.'"></hr-empty-state>
+
+    <!-- Interview cards -->
+    <section class="cards" *ngIf="(vm$ | async)?.interviews as interviews">
+      <article class="card interview" *ngFor="let interview of interviews; trackBy: trackByInterviewId">
+        <div class="interview-head">
+          <div>
+            <h3>{{ interview.candidateName }}</h3>
+            <p class="muted">{{ interview.jobTitle }}</p>
+            <p class="muted">📅 {{ interview.scheduledAt | date: 'EEEE dd/MM/yyyy HH:mm' }}</p>
+            <p class="muted" *ngIf="interview.location">📍 {{ interview.location }}</p>
+          </div>
+          <div class="chips">
+            <span class="chip chip-type">{{ typeLabels[interview.type] }}</span>
+            <hr-status-badge [tone]="statusTone(interview.status)">{{ statusLabels[interview.status] }}</hr-status-badge>
+            <hr-status-badge *ngIf="interview.result" [tone]="resultTone(interview.result)">
+              {{ resultLabels[interview.result] }}
+            </hr-status-badge>
+          </div>
+        </div>
+
+        <p class="notes" *ngIf="interview.notes"><strong>Notes:</strong> {{ interview.notes }}</p>
+
+        <!-- Actions for scheduled interviews -->
+        <div class="interview-actions" *ngIf="interview.status === 'Scheduled'">
+          <button type="button" class="btn btn-primary" (click)="openResult(interview)">Record result</button>
+          <button type="button" class="btn btn-danger" (click)="askCancel(interview)">Cancel interview</button>
+        </div>
+
+        <!-- Record result panel -->
+        <div class="panel" *ngIf="resultForId === interview.id">
+          <h4>Record the result for {{ interview.candidateName }}</h4>
+          <form [formGroup]="resultForm" (ngSubmit)="submitResult(interview)">
+            <div class="radio-group" role="radiogroup" aria-label="Interview decision">
+              <label class="radio" *ngFor="let option of resultOptions">
+                <input type="radio" formControlName="result" [value]="option" />
+                {{ resultLabels[option] }}
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="field-label">Notes (optional)</span>
+              <textarea formControlName="notes" rows="3" maxlength="500" placeholder="Write your evaluation of the candidate…"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button type="button" class="btn" (click)="closeResult()">Back</button>
+              <button type="submit" class="btn btn-primary" [disabled]="resultBusy">
+                {{ resultBusy ? 'Saving…' : 'Save result' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </article>
+    </section>
+  </ng-container>
+</div>

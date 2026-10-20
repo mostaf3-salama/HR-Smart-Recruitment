@@ -1,0 +1,29 @@
+/* Global styles — owned by Feature 1 (Theme / Typography / Colors).
+   These are minimal placeholders so the demo looks sane. */
+
+:root {
+  --hr-bg: #f3f5f9;
+  --hr-surface: #ffffff;
+  --hr-surface-muted: #f7f9fb;
+  --hr-border: #d8dee6;
+  --hr-text: #1f2937;
+  --hr-text-muted: #6b7280;
+  --hr-primary: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, 'Cairo', system-ui, -apple-system, sans-serif;
+  background: var(--hr-bg);
+  color: var(--hr-text);
+  -webkit-font-smoothing: antialiased;
+}

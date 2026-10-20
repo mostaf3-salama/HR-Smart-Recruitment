@@ -1,0 +1,53 @@
+<div class="page" dir="ltr" *ngIf="vm$ | async as vm">
+  <a routerLink="/candidate/applications" class="back-link">← My applications</a>
+
+  <hr-loader *ngIf="vm.loading">Loading…</hr-loader>
+
+  <section class="state state-error" *ngIf="vm.error" role="alert">
+    <p>{{ vm.error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <ng-container *ngIf="!vm.loading && !vm.error && vm.application as app">
+    <div class="head">
+      <div>
+        <h1>{{ app.jobTitle }}</h1>
+        <p class="muted">Applied {{ app.appliedAt | date: 'dd/MM/yyyy' }}</p>
+      </div>
+      <hr-status-badge [tone]="statusTone(app.status)">{{ app.status }}</hr-status-badge>
+    </div>
+
+    <section class="card">
+      <div class="score-row">
+        <span>Match score</span>
+        <hr-score-bar [score]="app.matchScore"></hr-score-bar>
+      </div>
+      <p class="ml" *ngIf="app.mlFeedback">{{ app.mlFeedback }}</p>
+
+      <div class="skills-group" *ngIf="app.matchedSkills.length">
+        <span class="skills-title">Matched skills</span>
+        <ul class="skills">
+          <li *ngFor="let skill of app.matchedSkills" class="skill skill-ok">✓ {{ skill }}</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card interview" *ngIf="app.interview as interview">
+      <h2>📅 Interview scheduled</h2>
+      <p><strong>{{ interview.type }}</strong> — {{ interview.scheduledAt | date: 'EEEE dd/MM/yyyy HH:mm' }}</p>
+    </section>
+
+    <section class="card">
+      <h2>Status timeline</h2>
+      <ol class="history">
+        <li *ngFor="let item of app.statusHistory">
+          <span class="dot"></span>
+          <div>
+            <strong>{{ item.status }}</strong>
+            <p class="muted">{{ item.changedAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </ng-container>
+</div>

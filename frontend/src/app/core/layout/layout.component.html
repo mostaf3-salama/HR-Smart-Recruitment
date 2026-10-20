@@ -1,0 +1,33 @@
+<div class="layout" dir="ltr">
+  <div class="progress" *ngIf="loadingActive$ | async" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <span class="brand">🧠 Smart Recruitment <em>· HR</em></span>
+
+    <div class="userbox" *ngIf="user$ | async as user">
+      <span class="user">{{ user.name }} <em>({{ user.role }})</em></span>
+      <button type="button" class="logout" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="body">
+    <aside class="sidebar" aria-label="Main navigation">
+      <ng-container *ngIf="isHr$ | async; else candidateNav">
+        <a routerLink="/hr/dashboard" routerLinkActive="active">📊 Dashboard</a>
+        <a routerLink="/hr/jobs" routerLinkActive="active">💼 My Jobs</a>
+        <a routerLink="/hr/applications" routerLinkActive="active">👥 Candidate Applications</a>
+        <a routerLink="/hr/interviews" routerLinkActive="active">📅 Interviews</a>
+      </ng-container>
+
+      <ng-template #candidateNav>
+        <a routerLink="/jobs" routerLinkActive="active">💼 Jobs</a>
+        <a routerLink="/candidate/applications" routerLinkActive="active">📝 My Applications</a>
+        <a routerLink="/candidate/profile" routerLinkActive="active">👤 Profile</a>
+      </ng-template>
+    </aside>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

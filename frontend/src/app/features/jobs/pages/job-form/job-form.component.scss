@@ -1,0 +1,133 @@
+.page {
+  padding: 20px;
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--hr-text, #1f2937);
+}
+
+.back-link {
+  font-size: 13px;
+  color: var(--hr-text-muted, #6b7280);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--hr-primary, #2563eb);
+  }
+}
+
+h1 {
+  margin: 6px 0 16px;
+  font-size: 22px;
+}
+
+.card {
+  background: var(--hr-surface, #fff);
+  border: 1px solid var(--hr-border, #d8dee6);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-narrow {
+  max-width: 240px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hr-text-muted, #6b7280);
+}
+
+input,
+textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--hr-border, #d8dee6);
+  border-radius: 10px;
+  background: var(--hr-surface, #fff);
+  color: inherit;
+  font: inherit;
+
+  &:focus {
+    outline: 2px solid var(--hr-primary, #2563eb);
+    outline-offset: 1px;
+  }
+}
+
+textarea {
+  resize: vertical;
+}
+
+.field-error {
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+.error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn {
+  border: 1px solid var(--hr-border, #d8dee6);
+  background: var(--hr-surface, #fff);
+  border-radius: 10px;
+  padding: 9px 18px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.state-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 16px;
+  margin-top: 16px;
+  text-align: center;
+  border: 1px dashed #fecaca;
+  border-radius: 14px;
+  background: #fef2f2;
+  color: #b91c1c;
+
+  p {
+    margin: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 14px;
+  }
+}

@@ -1,0 +1,93 @@
+<div class="page" dir="ltr" *ngIf="vm$ | async as vm">
+  <header class="page-header">
+    <div>
+      <h1>HR Dashboard 📊</h1>
+      <p class="subtitle">A quick overview of jobs, applicants and interviews</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/hr/interviews">Interviews →</a>
+  </header>
+
+  <!-- Loading (shared) -->
+  <hr-loader *ngIf="vm.loading">Loading the dashboard…</hr-loader>
+
+  <!-- Error -->
+  <section class="state state-error" *ngIf="vm.error" role="alert">
+    <p>{{ vm.error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <ng-container *ngIf="!vm.loading && !vm.error && vm.stats as stats">
+    <!-- Stat cards -->
+    <section class="stats" aria-label="Quick stats">
+      <article class="stat stat-jobs">
+        <span class="stat-value">{{ stats.activeJobs }}</span>
+        <span class="stat-label">💼 Active jobs</span>
+      </article>
+      <article class="stat stat-applicants">
+        <span class="stat-value">{{ stats.totalApplicants }}</span>
+        <span class="stat-label">👥 Total applicants</span>
+      </article>
+      <article class="stat stat-shortlisted">
+        <span class="stat-value">{{ stats.shortlistedCount }}</span>
+        <span class="stat-label">⭐ Shortlisted</span>
+      </article>
+      <article class="stat stat-interviews">
+        <span class="stat-value">{{ stats.upcomingInterviewsCount }}</span>
+        <span class="stat-label">📅 Upcoming interviews</span>
+      </article>
+      <article class="stat stat-accepted">
+        <span class="stat-value">{{ stats.acceptedCount }}</span>
+        <span class="stat-label">✓ Accepted</span>
+      </article>
+      <article class="stat stat-rejected">
+        <span class="stat-value">{{ stats.rejectedCount }}</span>
+        <span class="stat-label">✕ Rejected</span>
+      </article>
+    </section>
+
+    <div class="layout">
+      <!-- Upcoming interviews -->
+      <section class="card">
+        <div class="card-head">
+          <h2>Upcoming interviews</h2>
+          <a routerLink="/hr/interviews" class="link">View all →</a>
+        </div>
+
+        <p class="muted" *ngIf="stats.upcomingInterviews.length === 0">No scheduled interviews.</p>
+
+        <ul class="upcoming">
+          <li *ngFor="let interview of stats.upcomingInterviews">
+            <div>
+              <strong>{{ interview.candidateName }}</strong>
+              <p class="muted">{{ interview.jobTitle }} · {{ interview.type }}</p>
+              <p class="muted" *ngIf="interview.location">📍 {{ interview.location }}</p>
+            </div>
+            <span class="when">{{ interview.scheduledAt | date: 'dd/MM HH:mm' }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Applicants by status -->
+      <section class="card">
+        <div class="card-head">
+          <h2>Applicants by status</h2>
+        </div>
+
+        <ul class="bars">
+          <li *ngFor="let group of stats.applicantsByStatus">
+            <div class="bar-row">
+              <span class="bar-label">{{ group.status }}</span>
+              <span class="bar-count">{{ group.count }}</span>
+            </div>
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                [ngClass]="'fill-' + group.status.toLowerCase()"
+                [style.width.%]="barWidth(group.count, maxStatusCount(stats.applicantsByStatus))"></div>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </ng-container>
+</div>

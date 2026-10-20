@@ -1,0 +1,34 @@
+<div class="actions" [class.is-compact]="compact">
+  <button
+    type="button"
+    class="btn btn-success"
+    *ngIf="canShortlist"
+    [disabled]="disabled"
+    (click)="request('shortlist', $event)"
+    title="Move the applicant to Shortlisted">
+    <span *ngIf="!compact">Shortlist</span><span *ngIf="compact" aria-hidden="true">✓</span>
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-primary"
+    *ngIf="canAccept"
+    [disabled]="disabled"
+    (click)="request('accept', $event)"
+    title="Accept the applicant">
+    <span *ngIf="!compact">Accept</span><span *ngIf="compact" aria-hidden="true">★</span>
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-danger"
+    *ngIf="canReject"
+    [disabled]="disabled"
+    (click)="request('reject', $event)"
+    title="Reject the application">
+    <span *ngIf="!compact">Reject</span><span *ngIf="compact" aria-hidden="true">✕</span>
+  </button>
+
+  <span class="done" *ngIf="application.status === 'Accepted'">Accepted ✓</span>
+  <span class="done" *ngIf="application.status === 'Rejected'">Rejected ✕</span>
+</div>

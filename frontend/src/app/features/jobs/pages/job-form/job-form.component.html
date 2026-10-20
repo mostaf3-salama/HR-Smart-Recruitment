@@ -1,0 +1,53 @@
+<div class="page" dir="ltr">
+  <a routerLink="/hr/jobs" class="back-link">← My jobs</a>
+  <h1>{{ isEditMode ? 'Edit job' : 'Post a new job' }}</h1>
+
+  <hr-loader *ngIf="loading">Loading…</hr-loader>
+
+  <section class="state state-error" *ngIf="pageError" role="alert">
+    <p>{{ pageError }}</p>
+  </section>
+
+  <form class="card" *ngIf="!loading && !pageError" [formGroup]="form" (ngSubmit)="submit()">
+    <label class="field">
+      <span class="field-label">Title *</span>
+      <input type="text" formControlName="title" maxlength="150" placeholder="e.g. Front-End Developer (Angular)" />
+      <span class="field-error" *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
+        Title is required (max 150 characters).
+      </span>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Description *</span>
+      <textarea formControlName="description" rows="5" placeholder="Responsibilities, stack, benefits…"></textarea>
+      <span class="field-error" *ngIf="form.get('description')?.touched && form.get('description')?.invalid">
+        Description is required.
+      </span>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Required skills (comma-separated) *</span>
+      <input type="text" formControlName="requiredSkills" placeholder="e.g. Angular, TypeScript, RxJS" />
+      <span class="field-error" *ngIf="form.get('requiredSkills')?.touched && form.get('requiredSkills')?.invalid">
+        At least one skill is required.
+      </span>
+    </label>
+
+    <label class="field field-narrow">
+      <span class="field-label">Experience required (years) *</span>
+      <input type="number" min="0" max="50" formControlName="experienceRequired" />
+      <span class="field-error" *ngIf="form.get('experienceRequired')?.touched && form.get('experienceRequired')?.invalid">
+        Enter a value between 0 and 50.
+      </span>
+    </label>
+
+    <p class="error" *ngIf="submitError" role="alert">{{ submitError }}</p>
+
+    <div class="form-actions">
+      <a class="btn" routerLink="/hr/jobs">Cancel</a>
+      <button type="submit" class="btn btn-primary" [disabled]="busy">
+        {{ busy ? 'Saving…' : isEditMode ? 'Save changes' : 'Post job' }}
+      </button>
+    </div>
+  </form>
+</div>

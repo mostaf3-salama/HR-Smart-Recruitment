@@ -1,0 +1,110 @@
+@HostAddress = http://localhost:5030
+@Token = YOUR_JWT_HERE
+
+### HR dashboard
+GET {{HostAddress}}/api/hr/dashboard
+Accept: application/json
+
+###
+
+### Applicants of job 1 (filter + search)
+GET {{HostAddress}}/api/hr/jobs/1/applicants?status=all
+Accept: application/json
+
+###
+
+### Shortlisted candidates (schedule dropdown)
+GET {{HostAddress}}/api/hr/applications?status=Shortlisted
+Accept: application/json
+
+###
+
+### Application details
+GET {{HostAddress}}/api/hr/applications/1
+Accept: application/json
+
+###
+
+### Change status (needs HR/Admin token)
+PATCH {{HostAddress}}/api/hr/applications/2/status
+Authorization: Bearer {{Token}}
+Content-Type: application/json
+
+{
+  "action": "shortlist",
+  "note": "Strong CV."
+}
+
+###
+
+### Download CV
+GET {{HostAddress}}/api/hr/applications/1/cv
+Accept: application/pdf
+
+###
+
+### Upcoming interviews
+GET {{HostAddress}}/api/hr/interviews?tab=upcoming
+Accept: application/json
+
+###
+
+### Schedule interview (needs HR/Admin token)
+POST {{HostAddress}}/api/hr/interviews
+Authorization: Bearer {{Token}}
+Content-Type: application/json
+
+{
+  "applicationId": 1,
+  "type": "Technical",
+  "scheduledAt": "2026-10-20T10:00:00Z",
+  "location": "Online - Teams"
+}
+
+###
+
+### Record interview result (needs HR/Admin token)
+PATCH {{HostAddress}}/api/hr/interviews/1/result
+Authorization: Bearer {{Token}}
+Content-Type: application/json
+
+{
+  "result": "Passed",
+  "notes": "Great system design."
+}
+
+###
+# =======================================================================
+# AI: CV -> job recommendations (OpenRouter + Gemma)
+# =======================================================================
+
+### Login as a test candidate (created during the AI testing session).
+# If this account doesn't exist yet, register it first via POST /api/Auth/Register.
+# @name login
+POST {{HostAddress}}/api/Auth/Login
+Content-Type: application/json
+
+{
+  "email": "ai.test.candidate@mail.com",
+  "password": "Test123!"
+}
+
+###
+### Jobs recommended for the logged-in candidate by the AI
+GET {{HostAddress}}/api/Candidate/recommended-jobs
+Authorization: Bearer {{login.response.body.$.value.accessToken}}
+
+###
+### AI summary of the candidate's CV (extracted skills, years, bio)
+GET {{HostAddress}}/api/Candidate/cv-analysis
+Authorization: Bearer {{login.response.body.$.value.accessToken}}
+
+###
+### Force regeneration (after profile edits, or when the AI was rate-limited)
+POST {{HostAddress}}/api/Candidate/recommended-jobs/refresh
+Authorization: Bearer {{login.response.body.$.value.accessToken}}
+Content-Type: application/json
+
+{}
+
+###

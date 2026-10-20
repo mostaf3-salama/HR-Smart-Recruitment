@@ -1,0 +1,71 @@
+<div class="page" dir="ltr">
+  <header class="page-header">
+    <div>
+      <h1>Open Positions</h1>
+      <p class="subtitle" *ngIf="(vm$ | async)?.total as total">{{ total }} active jobs</p>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <section class="filters" aria-label="Search filters">
+    <label class="field field-search">
+      <span class="field-label">Search</span>
+      <input type="search" [formControl]="searchControl" placeholder="Search by title or skill (e.g. Angular)" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Max. experience (years)</span>
+      <input type="number" min="0" max="30" [formControl]="experienceControl" placeholder="Any" />
+    </label>
+  </section>
+
+  <!-- Error state -->
+  <section class="state state-error" *ngIf="(vm$ | async)?.error as error" role="alert">
+    <p>{{ error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <!-- Loading state (shared) -->
+  <hr-loader *ngIf="(vm$ | async)?.loading">Loading jobs…</hr-loader>
+
+  <ng-container *ngIf="!(vm$ | async)?.loading && !(vm$ | async)?.error">
+    <hr-empty-state
+      *ngIf="(vm$ | async)?.jobs?.length === 0"
+      message="No jobs match these filters."
+      actionLabel="Clear filters"
+      (action)="clearFilters()"></hr-empty-state>
+
+    <!-- Job cards -->
+    <section class="cards" *ngIf="(vm$ | async)?.jobs as jobs">
+      <article class="card job" *ngFor="let job of pagedJobs(jobs); trackBy: trackByJobId">
+        <div class="job-head">
+          <h3>
+            <a [routerLink]="['/jobs', job.id]">{{ job.title }}</a>
+          </h3>
+          <hr-status-badge [tone]="badgeTone(job)">{{ job.isActive ? 'Active' : 'Closed' }}</hr-status-badge>
+        </div>
+
+        <p class="desc">{{ job.description }}</p>
+
+        <ul class="skills">
+          <li *ngFor="let skill of skillsOf(job).slice(0, 5)" class="skill">{{ skill }}</li>
+        </ul>
+
+        <div class="job-foot">
+          <span class="muted">🧰 {{ job.experienceRequired }} yrs · 📅 {{ job.createdAt | date: 'dd/MM/yyyy' }}</span>
+          <div class="job-actions">
+            <a class="btn" [routerLink]="['/jobs', job.id]">Details</a>
+            <a class="btn btn-primary" [routerLink]="['/jobs', job.id, 'apply']">Apply</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Pagination -->
+    <nav class="pagination" *ngIf="(vm$ | async)?.total as total" aria-label="Pages">
+      <button type="button" class="btn" [disabled]="page <= 1" (click)="prevPage()">← Prev</button>
+      <span>Page {{ page }} of {{ totalPages(total) }}</span>
+      <button type="button" class="btn" [disabled]="page >= totalPages(total)" (click)="nextPage(totalPages(total))">Next →</button>
+    </nav>
+  </ng-container>
+</div>

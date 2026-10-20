@@ -1,0 +1,107 @@
+<div class="page" dir="ltr">
+  <!-- Header -->
+  <header class="page-header">
+    <div>
+      <a routerLink="/hr/dashboard" class="back-link">← Back</a>
+      <h1>{{ (vm$ | async)?.jobTitle ? 'Applicants for ' + ((vm$ | async)?.jobTitle) : 'Applicants' }}</h1>
+      <p class="subtitle" *ngIf="(vm$ | async)?.applicants as applicants">
+        {{ applicants.length }} applicants — sorted by Match Score (highest first)
+      </p>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <section class="filters" aria-label="Search filters">
+    <label class="field field-search">
+      <span class="field-label">Search</span>
+      <input
+        type="search"
+        [formControl]="searchControl"
+        placeholder="Search by name or skill (e.g. Angular)" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Status</span>
+      <select [formControl]="statusControl">
+        <option value="all">All statuses</option>
+        <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+      </select>
+    </label>
+  </section>
+
+  <!-- Error state -->
+  <section class="state state-error" *ngIf="(vm$ | async)?.error as error" role="alert">
+    <p>{{ error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <!-- Loading state (shared) -->
+  <hr-loader *ngIf="(vm$ | async)?.loading">Loading applicants…</hr-loader>
+
+  <!-- Empty state (shared) -->
+  <ng-container *ngIf="!(vm$ | async)?.loading && !(vm$ | async)?.error">
+    <hr-empty-state
+      *ngIf="(vm$ | async)?.applicants?.length === 0"
+      message="No applicants match these filters."
+      actionLabel="Clear filters"
+      (action)="clearFilters()"></hr-empty-state>
+
+    <!-- Applicants table -->
+    <section class="table-wrap" *ngIf="(vm$ | async)?.applicants?.length">
+      <table class="applicants-table">
+        <thead>
+          <tr>
+            <th scope="col" class="cell-rank">#</th>
+            <th scope="col">Applicant</th>
+            <th scope="col">Skills</th>
+            <th scope="col">Match Score</th>
+            <th scope="col">Status</th>
+            <th scope="col">Applied At</th>
+            <th scope="col" class="cell-actions">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="let applicant of (vm$ | async)?.applicants; trackBy: trackByApplicationId; let i = index"
+            [routerLink]="['/hr/applications', applicant.applicationId]"
+            class="applicant-row">
+            <td class="cell-rank" data-label="#">{{ i + 1 }}</td>
+
+            <td data-label="Applicant">
+              <span class="candidate-name">{{ applicant.candidateName }}</span>
+              <span class="candidate-meta">{{ applicant.email }} · {{ applicant.yearsOfExperience }} yrs experience</span>
+              <span class="candidate-meta" *ngIf="!applicant.hasCv">⚠️ No CV attached</span>
+            </td>
+
+            <td data-label="Skills">
+              <ul class="skills">
+                <li *ngFor="let skill of applicant.skills.slice(0, 4)" class="skill">{{ skill }}</li>
+                <li *ngIf="applicant.skills.length > 4" class="skill skill-more">+{{ applicant.skills.length - 4 }}</li>
+              </ul>
+            </td>
+
+            <td data-label="Match Score">
+              <hr-score-bar [score]="applicant.matchScore"></hr-score-bar>
+            </td>
+
+            <td data-label="Status">
+              <hr-status-badge [tone]="statusTone(applicant.status)">{{ applicant.status }}</hr-status-badge>
+            </td>
+
+            <td data-label="Applied At">{{ applicant.appliedAt | date: 'dd/MM/yyyy' }}</td>
+
+            <td class="cell-actions" data-label="Action" (click)="$event.stopPropagation()">
+              <hr-status-actions
+                [application]="applicant"
+                [compact]="true"
+                (actionRequested)="onAction(applicant, $event)"></hr-status-actions>
+
+              <a class="details-link" [routerLink]="['/hr/applications', applicant.applicationId]">Details →</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </ng-container>
+</div>

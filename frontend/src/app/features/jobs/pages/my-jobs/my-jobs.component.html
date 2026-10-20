@@ -1,0 +1,72 @@
+<div class="page" dir="ltr">
+  <header class="page-header">
+    <div>
+      <h1>My Jobs</h1>
+      <p class="subtitle">Manage your postings, applicants and status</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/hr/jobs/new">+ New job</a>
+  </header>
+
+  <!-- Error state -->
+  <section class="state state-error" *ngIf="(vm$ | async)?.error as error" role="alert">
+    <p>{{ error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <!-- Loading state (shared) -->
+  <hr-loader *ngIf="(vm$ | async)?.loading">Loading your jobs…</hr-loader>
+
+  <ng-container *ngIf="!(vm$ | async)?.loading && !(vm$ | async)?.error">
+    <hr-empty-state
+      *ngIf="(vm$ | async)?.jobs?.length === 0"
+      message="You haven't posted any jobs yet."
+      actionLabel="+ Post your first job"
+      (action)="goNew()"></hr-empty-state>
+
+    <!-- Jobs table -->
+    <section class="table-wrap" *ngIf="(vm$ | async)?.jobs as jobs">
+      <table class="jobs-table" *ngIf="jobs.length">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Applicants</th>
+            <th scope="col">Status</th>
+            <th scope="col">Posted</th>
+            <th scope="col" class="cell-actions">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let job of jobs; trackBy: trackByJobId">
+            <td data-label="Title">
+              <span class="job-title">{{ job.title }}</span>
+              <span class="muted">{{ job.experienceRequired }} yrs exp</span>
+            </td>
+
+            <td data-label="Applicants">
+              <a class="link" [routerLink]="['/hr/jobs', job.id, 'applicants']">
+                {{ job.applicantsCount == null ? '—' : job.applicantsCount + ' view →' }}
+              </a>
+            </td>
+
+            <td data-label="Status">
+              <hr-status-badge [tone]="job.isActive ? 'success' : 'neutral'">
+                {{ job.isActive ? 'Active' : 'Closed' }}
+              </hr-status-badge>
+            </td>
+
+            <td data-label="Posted">{{ job.createdAt | date: 'dd/MM/yyyy' }}</td>
+
+            <td class="cell-actions" data-label="Action">
+              <a class="btn" [routerLink]="['/hr/jobs', job.id, 'edit']">Edit</a>
+              <button type="button" class="btn" (click)="toggle(job)">
+                {{ job.isActive ? 'Close' : 'Reopen' }}
+              </button>
+              <button type="button" class="btn btn-danger" (click)="remove(job)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </ng-container>
+</div>

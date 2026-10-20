@@ -1,0 +1,116 @@
+<div class="page" dir="ltr" *ngIf="vm$ | async as vm">
+  <h1>My Profile</h1>
+  <p class="subtitle">This data feeds the match-score model — keep it up to date.</p>
+
+  <hr-loader *ngIf="vm.loading">Loading your profile…</hr-loader>
+
+  <section class="state state-error" *ngIf="vm.error" role="alert">
+    <p>{{ vm.error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <ng-container *ngIf="!vm.loading && !vm.error">
+    <!-- CV card -->
+    <section class="card">
+      <h2>CV (PDF only, max 5 MB)</h2>
+      <p class="muted" *ngIf="!vm.exists">⚠️ Save the profile form below <strong>first</strong> — the upload needs a profile to attach to.</p>
+      <p class="muted" *ngIf="currentCvName">📄 Current file: <strong>{{ currentCvName }}</strong></p>
+      <p class="muted" *ngIf="!currentCvName">No CV uploaded yet.</p>
+
+      <label class="upload">
+        <input type="file" accept="application/pdf,.pdf" (change)="onCvSelected($event)" [disabled]="uploading" hidden />
+        <span class="btn" [class.disabled]="uploading">{{ uploading ? 'Uploading…' : 'Choose PDF' }}</span>
+      </label>
+
+      <div class="progress" *ngIf="uploading">
+        <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+        <span>{{ uploadProgress }}%</span>
+      </div>
+
+      <p class="cv-error" *ngIf="uploadError" role="alert">{{ uploadError }}</p>
+      <p class="muted" *ngIf="currentCvName && !uploading">After each upload the AI re-ranks the open jobs for you — see the section below.</p>
+    </section>
+
+    <!-- AI recommendations (fills in once a CV is uploaded) -->
+    <section class="card" *ngIf="vm.exists">
+      <div class="recs-head">
+        <h2>✨ Recommended jobs for you</h2>
+        <button type="button" class="btn btn-sm" (click)="refreshRecommendations()" [disabled]="recsLoading">
+          {{ recsLoading ? 'Analyzing…' : 'Refresh' }}
+        </button>
+      </div>
+      <p class="muted">Ranked by the AI from your CV + profile data.</p>
+
+      <hr-loader *ngIf="recsLoading">AI is matching your CV with open jobs — can take up to a minute on first load…</hr-loader>
+
+      <ng-container *ngIf="!recsLoading">
+        <p class="recs-error" *ngIf="recsError" role="alert">
+          {{ recsError }}
+          <button type="button" class="btn btn-sm" (click)="refreshRecommendations()">Retry</button>
+        </p>
+
+        <ng-container *ngIf="!recsError">
+          <p class="muted empty-recs" *ngIf="!recs || recs.length === 0">
+            No recommendations yet — upload (or re-upload) your CV above, then click Refresh.
+          </p>
+
+          <div class="rec" *ngFor="let job of recs; let i = index">
+            <div class="rec-rank">{{ i + 1 }}</div>
+            <div class="rec-main">
+              <h3>{{ job.title }}</h3>
+              <p class="muted rec-meta">{{ job.company }} · needs {{ job.experienceRequired }}+ yrs</p>
+              <p class="rec-reason">💡 {{ job.reason }}</p>
+              <div class="chips">
+                <span class="chip" *ngFor="let s of splitSkills(job.requiredSkills)">{{ s }}</span>
+              </div>
+            </div>
+            <div class="rec-side">
+              <hr-score-bar [score]="job.score"></hr-score-bar>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <!-- What the AI read from the CV -->
+      <div class="analysis" *ngIf="cvAnalysis && cvAnalysis.hasCvAnalysis">
+        <h3>What the AI read from your CV</h3>
+        <p class="muted">{{ cvAnalysis.summary }}</p>
+        <div class="chips">
+          <span class="chip chip-accent" *ngFor="let s of cvAnalysis.skills">{{ s }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile form -->
+    <section class="card">
+      <h2>Profile data</h2>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-grid">
+          <label class="field"><span>Age * (18–80)</span><input type="number" formControlName="age" /></label>
+          <label class="field"><span>Education level *</span><input type="text" formControlName="educationLevel" placeholder="e.g. Bachelor" /></label>
+          <label class="field"><span>University tier *</span><input type="text" formControlName="universityTier" placeholder="e.g. Tier 1" /></label>
+          <label class="field"><span>CGPA * (0–4)</span><input type="number" step="0.1" formControlName="cgpa" /></label>
+          <label class="field"><span>Internships</span><input type="number" min="0" formControlName="internships" /></label>
+          <label class="field"><span>Projects</span><input type="number" min="0" formControlName="projects" /></label>
+          <label class="field"><span>Programming languages</span><input type="number" min="0" formControlName="programmingLanguages" /></label>
+          <label class="field"><span>Certifications</span><input type="number" min="0" formControlName="certifications" /></label>
+          <label class="field"><span>Experience (years)</span><input type="number" min="0" step="0.5" formControlName="experienceYears" /></label>
+          <label class="field"><span>Hackathons</span><input type="number" min="0" formControlName="hackathons" /></label>
+          <label class="field"><span>Research papers</span><input type="number" min="0" formControlName="researchPapers" /></label>
+          <label class="field"><span>Skills score</span><input type="number" min="0" formControlName="skillsScore" /></label>
+          <label class="field"><span>Soft-skills score</span><input type="number" min="0" formControlName="softSkillsScore" /></label>
+          <label class="field"><span>Resume length (words)</span><input type="number" min="0" formControlName="resumeLengthWords" /></label>
+          <label class="field"><span>Company type *</span><input type="text" formControlName="companyType" placeholder="e.g. Product" /></label>
+          <label class="field field-wide"><span>Skills (comma-separated)</span><input type="text" formControlName="skills" maxlength="1000" placeholder="e.g. Angular, TypeScript" /></label>
+          <label class="field field-wide"><span>Bio</span><textarea formControlName="bio" rows="3" maxlength="2000"></textarea></label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="saving">
+            {{ saving ? 'Saving…' : vm.exists ? 'Save changes' : 'Create profile' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </ng-container>
+</div>

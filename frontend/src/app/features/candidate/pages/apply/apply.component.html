@@ -1,0 +1,28 @@
+<div class="page" dir="ltr" *ngIf="vm$ | async as vm">
+  <a [routerLink]="['/jobs', vm.job?.id ?? 0]" class="back-link">← Back to job</a>
+
+  <hr-loader *ngIf="vm.loading">Loading…</hr-loader>
+
+  <section class="state state-error" *ngIf="vm.error" role="alert">
+    <p>{{ vm.error }}</p>
+  </section>
+
+  <section class="card" *ngIf="!vm.loading && !vm.error && vm.job as job">
+    <h1>Apply for {{ job.title }}</h1>
+    <p class="muted">🧰 {{ job.experienceRequired }} yrs experience</p>
+    <p class="desc">{{ job.description }}</p>
+
+    <div class="cv-note">
+      📄 Your default CV from <a routerLink="/candidate/profile">your profile</a> will be sent with this application.
+    </div>
+
+    <p class="error" *ngIf="applyError" role="alert">{{ applyError }}</p>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" [disabled]="applying || !job.isActive" (click)="submit(job)">
+        {{ applying ? 'Submitting…' : 'Confirm application' }}
+      </button>
+      <span class="muted" *ngIf="!job.isActive">This position is closed.</span>
+    </div>
+  </section>
+</div>

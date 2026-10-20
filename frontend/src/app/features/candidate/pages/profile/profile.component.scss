@@ -1,0 +1,275 @@
+.page {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  color: var(--hr-text, #1f2937);
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+  }
+}
+
+.subtitle {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--hr-text-muted, #6b7280);
+}
+
+.card {
+  background: var(--hr-surface, #fff);
+  border: 1px solid var(--hr-border, #d8dee6);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
+}
+
+.muted {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--hr-text-muted, #6b7280);
+}
+
+.upload .btn {
+  display: inline-block;
+}
+
+.upload .btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn {
+  border: 1px solid var(--hr-border, #d8dee6);
+  background: var(--hr-surface, #fff);
+  border-radius: 10px;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  height: 12px;
+  border-radius: 999px;
+  background: #eef2f7;
+  overflow: visible;
+  font-size: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #2563eb;
+  min-width: 8px;
+}
+
+.cv-error {
+  margin: 8px 0 0;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hr-text-muted, #6b7280);
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+input,
+textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--hr-border, #d8dee6);
+  border-radius: 10px;
+  background: var(--hr-surface, #fff);
+  color: var(--hr-text, #1f2937);
+  font: inherit;
+  font-weight: 400;
+
+  &:focus {
+    outline: 2px solid var(--hr-primary, #2563eb);
+    outline-offset: 1px;
+  }
+}
+
+textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.state-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 16px;
+  text-align: center;
+  border: 1px dashed #fecaca;
+  border-radius: 14px;
+  background: #fef2f2;
+  color: #b91c1c;
+
+  p {
+    margin: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// AI recommendations
+// ---------------------------------------------------------------------------
+.recs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.recs-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 0;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.empty-recs {
+  font-style: italic;
+}
+
+.rec {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0 10px;
+  border-top: 1px solid var(--hr-border, #d8dee6);
+
+  &:first-of-type {
+    margin-top: 12px;
+  }
+}
+
+.rec-rank {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rec-main {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    margin: 0 0 2px;
+    font-size: 14px;
+  }
+}
+
+.rec-meta {
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+
+.rec-reason {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #065f46;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  background: #eef2f7;
+  color: #334155;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.chip-accent {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+.rec-side {
+  flex: none;
+  padding-top: 4px;
+}
+
+.analysis {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--hr-border, #d8dee6);
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 14px;
+  }
+}

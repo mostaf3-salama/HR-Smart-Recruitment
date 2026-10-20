@@ -1,0 +1,185 @@
+<div class="page" dir="ltr" *ngIf="vm$ | async as vm">
+  <header class="page-header">
+    <a [routerLink]="['/hr/jobs', vm.application?.jobId ?? 0, 'applicants']" class="back-link">→ Back to applicants</a>
+    <h1>{{ vm.application?.candidateName ?? 'Applicant Details' }}</h1>
+    <p class="subtitle" *ngIf="vm.application as app">
+      Applied for <strong>{{ app.jobTitle }}</strong> on {{ app.appliedAt | date: 'dd/MM/yyyy' }}
+    </p>
+  </header>
+
+  <!-- Loading (shared) -->
+  <hr-loader *ngIf="vm.loading">Loading the applicant profile…</hr-loader>
+
+  <!-- Error -->
+  <section class="state state-error" *ngIf="vm.error" role="alert">
+    <p>{{ vm.error }}</p>
+    <button type="button" class="btn" (click)="retry()">Retry</button>
+  </section>
+
+  <ng-container *ngIf="!vm.loading && !vm.error && vm.application as app">
+    <div class="layout">
+      <!-- ============ Main column ============ -->
+      <main class="main">
+        <!-- Candidate summary -->
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h2>{{ app.candidateName }}</h2>
+              <p class="muted">{{ app.email }} <span *ngIf="app.phone">· {{ app.phone }}</span></p>
+              <p class="muted">{{ app.educationLevel }} · {{ app.yearsOfExperience }} yrs experience</p>
+            </div>
+            <hr-status-badge [tone]="statusTone(app.status)">{{ app.status }}</hr-status-badge>
+          </div>
+
+          <p *ngIf="app.summary" class="summary">{{ app.summary }}</p>
+
+          <!-- Match score + ML feedback -->
+          <div class="score-block">
+            <div class="score-ring">
+              <span class="score-value" [ngClass]="scoreClass(app.matchScore)">
+                {{ app.matchScore == null ? '—' : app.matchScore + '%' }}
+              </span>
+              <span class="score-label">Match Score</span>
+            </div>
+
+            <div class="score-details">
+              <p class="ml-feedback" *ngIf="app.mlFeedback">
+                <strong>ML summary:</strong> {{ app.mlFeedback }}
+              </p>
+
+              <div class="skills-group">
+                <span class="skills-title">Matched skills</span>
+                <ul class="skills">
+                  <li *ngFor="let skill of app.matchedSkills" class="skill skill-ok">✓ {{ skill }}</li>
+                  <li *ngIf="app.matchedSkills.length === 0" class="muted">—</li>
+                </ul>
+              </div>
+
+              <div class="skills-group">
+                <span class="skills-title">Missing skills</span>
+                <ul class="skills">
+                  <li *ngFor="let skill of app.missingSkills" class="skill skill-missing">✕ {{ skill }}</li>
+                  <li *ngIf="app.missingSkills.length === 0" class="muted">—</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CV -->
+        <section class="card">
+          <h3>CV</h3>
+
+          <div class="cv-box" *ngIf="app.cv as cv">
+            <div>
+              <p class="cv-name">📄 {{ cv.fileName }}</p>
+              <p class="muted">{{ (cv.sizeBytes / 1024).toFixed(0) }} KB · PDF</p>
+            </div>
+            <div class="cv-actions">
+              <button type="button" class="btn" [disabled]="cvBusy" (click)="previewCv()">Preview</button>
+              <button type="button" class="btn btn-primary" [disabled]="cvBusy" (click)="downloadCv()">Download</button>
+            </div>
+          </div>
+
+          <p class="muted" *ngIf="!app.cv">⚠️ The applicant did not attach a CV.</p>
+        </section>
+
+        <!-- Skills -->
+        <section class="card" *ngIf="app.skills.length">
+          <h3>Skills</h3>
+          <ul class="skills">
+            <li *ngFor="let skill of app.skills" class="skill">{{ skill }}</li>
+          </ul>
+        </section>
+
+        <!-- Experience -->
+        <section class="card" *ngIf="app.experience.length">
+          <h3>Work Experience</h3>
+          <ul class="timeline">
+            <li *ngFor="let item of app.experience">
+              <strong>{{ item.title }}</strong> — {{ item.company }}
+              <span class="muted">
+                ({{ item.from | date: 'MM/yyyy' }} —
+                {{ item.isCurrent ? 'Present' : (item.to | date: 'MM/yyyy') }})
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Education -->
+        <section class="card" *ngIf="app.education.length">
+          <h3>Education</h3>
+          <ul class="timeline">
+            <li *ngFor="let item of app.education">
+              <strong>{{ item.level }} {{ item.field }}</strong>
+              <span class="muted" *ngIf="item.university"> — {{ item.university }}</span>
+              <span class="muted" *ngIf="item.cgpa"> · GPA {{ item.cgpa }}</span>
+              <span class="muted" *ngIf="item.graduationYear"> · {{ item.graduationYear }}</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Projects -->
+        <section class="card" *ngIf="app.projects.length">
+          <h3>Projects</h3>
+          <ul class="timeline">
+            <li *ngFor="let item of app.projects">
+              <strong>{{ item.name }}</strong>
+              <span class="muted" *ngIf="item.description"> — {{ item.description }}</span>
+              <a *ngIf="item.link" [href]="item.link" target="_blank" rel="noopener" class="link"> (link)</a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Certifications -->
+        <section class="card" *ngIf="app.certifications.length">
+          <h3>Certifications</h3>
+          <ul class="timeline">
+            <li *ngFor="let item of app.certifications">
+              <strong>{{ item.name }}</strong>
+              <span class="muted" *ngIf="item.issuer"> — {{ item.issuer }}</span>
+              <span class="muted" *ngIf="item.year"> · {{ item.year }}</span>
+            </li>
+          </ul>
+        </section>
+      </main>
+
+      <!-- ============ Side column ============ -->
+      <aside class="side">
+        <!-- HR decisions -->
+        <section class="card card-sticky">
+          <h3>HR Decisions</h3>
+          <hr-status-actions [application]="app" (actionRequested)="onAction($event)"></hr-status-actions>
+
+          <a
+            class="interview-link"
+            [routerLink]="['/hr/interviews']"
+            [queryParams]="{ applicationId: app.applicationId }">
+            📅 Schedule an interview (open the interviews page)
+          </a>
+
+          <div class="interview-info" *ngIf="app.interview as interview">
+            <p><strong>Scheduled interview:</strong> {{ interview.type }} — {{ interview.scheduledAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+        </section>
+
+        <!-- Status history -->
+        <section class="card">
+          <h3>Status History</h3>
+          <ol class="history">
+            <li *ngFor="let item of app.statusHistory">
+              <span class="history-dot" [ngClass]="item.status.toLowerCase()"></span>
+              <div>
+                <strong>{{ item.status }}</strong>
+                <p class="muted">
+                  {{ item.changedAt | date: 'dd/MM/yyyy HH:mm' }} — {{ item.changedBy }}
+                </p>
+                <p class="history-note" *ngIf="item.note">"{{ item.note }}"</p>
+              </div>
+            </li>
+          </ol>
+        </section>
+      </aside>
+    </div>
+  </ng-container>
+</div>

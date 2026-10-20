@@ -1,0 +1,11 @@
+.vs/
+bin/
+obj/
+.vscode/
+
+# Uploaded CVs (privacy - never commit user documents)
+HrSmartRecruitment/wwwroot/uploads/
+**/node_modules/
+**/dist/
+**/.angular/
+*.user
