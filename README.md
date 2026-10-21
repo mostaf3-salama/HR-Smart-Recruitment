@@ -1,4 +1,4 @@
-# Smart Recruitment Platform — Backend (.NET 8)
+# Smart Recruitment Platform — Backend (.NET 10)
 
 > الباك إند بتاع منصة التوظيف الذكي: Auth + وظائف + جهة المرشح + جهة الـ HR (متقدمين/مقابلات/لوحة) + **✨ AI بيرشّح وظائف من الـ CV تلقائياً (Gemma عبر OpenRouter)**.
 
